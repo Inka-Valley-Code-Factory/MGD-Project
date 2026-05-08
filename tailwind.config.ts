@@ -57,6 +57,27 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      animation: {
+        orbDrift: "orbDrift 12s ease-in-out infinite alternate",
+        orbDriftReverse: "orbDrift 15s ease-in-out infinite alternate-reverse",
+        marquee: "marquee 40s linear infinite",
+        "marquee-slow": "marquee 60s linear infinite",
+        "marquee-reverse-slow": "marquee-reverse 60s linear infinite",
+      },
+      keyframes: {
+        orbDrift: {
+          "0%": { transform: "translate(0, 0) scale(1)" },
+          "100%": { transform: "translate(40px, -30px) scale(1.08)" },
+        },
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        "marquee-reverse": {
+          "0%": { transform: "translateX(-50%)" },
+          "100%": { transform: "translateX(0)" },
+        },
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

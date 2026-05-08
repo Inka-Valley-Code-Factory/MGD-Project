@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes orbDrift {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(40px, -30px) scale(1.08);
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 3.9%;
@@ -37,5 +46,26 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  @supports (animation-timeline: view()) {
+    .sites-scroll-section {
+      view-timeline-name: --sites-timeline;
+    }
+    .sites-scroll-track {
+      animation: auto linear sites-horizontal-scroll forwards;
+      animation-timeline: --sites-timeline;
+      animation-range: entry 100% exit 0%;
+    }
+  }
+}
+
+@keyframes sites-horizontal-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* Translate left by the full track width minus one viewport width */
+    transform: translateX(calc(-100% + 100vw));
   }
 }
