@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { LogoutButton } from "@/components/logout-button";
 import { 
   LayoutDashboard, 
@@ -6,6 +7,7 @@ import {
   MapPin, 
   Tag, 
   Megaphone,
+  Star,
   ChevronRight
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -17,12 +19,21 @@ const DashboardComp = () => {
       description: "Manage development projects and timelines",
       icon: <Building2 className="w-8 h-8 text-blue-500" />,
       color: "bg-blue-50 dark:bg-blue-900/20",
+      href: "/protected/projects",
     },
     {
       title: "Sites Panel",
       description: "Track and manage site locations and status",
       icon: <MapPin className="w-8 h-8 text-emerald-500" />,
       color: "bg-emerald-50 dark:bg-emerald-900/20",
+      href: "/protected/sites",
+    },
+    {
+      title: "Reviews Panel",
+      description: "Write and manage client reviews",
+      icon: <Star className="w-8 h-8 text-violet-500" />,
+      color: "bg-violet-50 dark:bg-violet-900/20",
+      href: "/protected/reviews",
     },
     {
       title: "Discount / Offers Panel",
@@ -72,8 +83,8 @@ const DashboardComp = () => {
         {/* Dashboard Panels Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {panels.map((panel, index) => (
-            <Card 
-              key={index} 
+            <Card
+              key={index}
               className="group relative overflow-hidden border-none shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer ring-1 ring-slate-200 dark:ring-slate-800"
             >
               <div className={`absolute top-0 right-0 p-3 ${panel.color} rounded-bl-3xl opacity-50 group-hover:opacity-100 transition-opacity`}>
@@ -91,9 +102,20 @@ const DashboardComp = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="pb-8">
-                <div className="flex items-center text-sm font-semibold text-slate-900 dark:text-white group-hover:gap-2 transition-all">
-                  Access Management <ChevronRight className="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 transition-all" />
-                </div>
+                {"href" in panel && typeof panel.href === "string" ? (
+                  <Link
+                    href={panel.href}
+                    className="flex items-center text-sm font-semibold text-slate-900 dark:text-white group-hover:gap-2 transition-all"
+                  >
+                    Access Management{" "}
+                    <ChevronRight className="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 transition-all" />
+                  </Link>
+                ) : (
+                  <div className="flex items-center text-sm font-semibold text-slate-900 dark:text-white group-hover:gap-2 transition-all">
+                    Access Management{" "}
+                    <ChevronRight className="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 transition-all" />
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
