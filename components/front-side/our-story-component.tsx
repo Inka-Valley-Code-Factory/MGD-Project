@@ -35,10 +35,10 @@ const projectPhotos = [
 ];
 
 const milestones = [
-  { val: "1999", label: "Year Founded" },
-  { val: "500+", label: "Projects Delivered" },
-  { val: "2,400+", label: "Workforce" },
-  { val: "12", label: "Awards Won" },
+  { val: "2012", label: "Year Founded" },
+  { val: "20+", label: "Projects Delivered" },
+  { val: "50+", label: "Workforce" },
+  { val: "15+", label: "Trusted Clients" },
 ];
 
 const OurStoryComponent = () => {
@@ -54,7 +54,7 @@ const OurStoryComponent = () => {
         }`}
       >
         <img
-          src="/founder.png"
+          src="/owner2.jpg"
           alt="MGD Group Founder"
           className="w-full h-full object-cover object-top transition-transform duration-[700ms] ease-in-out group-hover:scale-[1.04]"
           style={{ filter: "saturate(0.92) contrast(1.06)" }}
@@ -76,10 +76,10 @@ const OurStoryComponent = () => {
             Founder &amp; CEO
           </div>
           <div className="text-[clamp(1rem,1.5vw,1.4rem)] font-bold tracking-[0.06em] uppercase text-white">
-            Mr. Mahesh G. De Silva
+            MR M.G.D Madushanka
           </div>
           <div className="text-[0.65rem] tracking-[0.3em] uppercase text-white/55">
-            Est. 1999
+            Est. 2012
           </div>
         </div>
 
@@ -150,25 +150,25 @@ const OurStoryComponent = () => {
       {/* Body text */}
       <div className="flex flex-col gap-5">
         <p className="text-[0.95rem] leading-[1.85] text-white/65 tracking-[0.02em]">
-          MGD Group Pvt Ltd was founded in 1999 by{" "}
+          MGD Group Pvt Ltd was founded in 2012 by{" "}
           <strong className="text-white/90 font-bold">
-            Mr. Mahesh Gunathilake De Silva
+            Mr. M.G.D Madushanka
           </strong>
-          , a visionary engineer who believed that quality construction could
-          transform communities. Starting with a single residential project in
-          Colombo, the company grew into one of Sri Lanka&apos;s most trusted
+          , a visionary businessman who believed that quality construction could
+          transform communities. Starting with a single hospital project in
+          Akuressa, the company grew into one of Sri Lanka&apos;s most trusted
           construction conglomerates.
         </p>
         <p className="text-[0.95rem] leading-[1.85] text-white/65 tracking-[0.02em]">
-          Over two and a half decades, we have delivered more than{" "}
-          <strong className="text-white/90 font-bold">500+ projects</strong>{" "}
-          spanning luxury residences, commercial towers, highways, bridges, and
-          industrial parks — each built with unwavering commitment to precision,
+          Over one and a half decades, we have delivered more than{" "}
+          <strong className="text-white/90 font-bold">20+ projects</strong>{" "}
+          spanning luxury residences, commercial towers, hospitals, houses and
+          industrial parks - each built with unwavering commitment to precision,
           safety, and sustainability.
         </p>
         <p className="text-[0.95rem] leading-[1.85] text-white/65 tracking-[0.02em]">
           Our legacy is not just in the structures we raise, but in the lives we
-          shape and the communities we strengthen — one foundation at a time.
+          shape and the communities we strengthen - one foundation at a time.
         </p>
       </div>
 
@@ -252,7 +252,7 @@ const OurStoryComponent = () => {
             <div>
               <h2 className="text-[clamp(2.2rem,3.5vw,3.8rem)] font-light leading-[1.1] tracking-[-0.02em] uppercase text-[#d1d1d1]">
                 Built On <br />
-                <span className="font-bold text-[#ff4500]">25 Years</span>
+                <span className="font-bold text-[#ff4500]">12 Years</span>
                 <br /> Of Grit &amp; Vision.
               </h2>
             </div>
@@ -275,7 +275,7 @@ const OurStoryComponent = () => {
           <div className="mb-6">
             <h2 className="text-[clamp(1.9rem,7vw,3rem)] font-light leading-[1.1] tracking-[-0.02em] uppercase text-[#d1d1d1]">
               Built On <br />
-              <span className="font-bold text-[#ff4500]">25 Years</span>
+              <span className="font-bold text-[#ff4500]">12 Years</span>
               <br /> Of Grit &amp; Vision.
             </h2>
           </div>

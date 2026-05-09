@@ -21,7 +21,8 @@ const SriLankaMap = dynamic(
 );
 
 // Helper to find site by ID from the map
-const findSiteById = (id: number, sites: any[]) => sites.find(s => s.id === id);
+const findSiteById = (id: number, sites: any[]) =>
+  sites.find((s) => s.id === id);
 
 const sitesData = [
   {
@@ -168,7 +169,7 @@ const AllSitesPage = () => {
                 Home
               </Link>
               <span className="w-4 h-px bg-white/20" />
-              <span className="text-white/40">Our Digital Footprint</span>
+              <span className="text-white/40">MGD GROUP Digital Footprint</span>
             </div>
             <h1 className="text-[clamp(2.5rem,8vw,6rem)] font-light leading-[0.9] tracking-[-0.04em] uppercase">
               Sites{" "}

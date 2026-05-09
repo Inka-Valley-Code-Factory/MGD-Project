@@ -18,19 +18,25 @@ const MobileSitesCarousel = ({
     const el = scrollRef.current;
     if (!el) return;
 
-    const handleScroll = () => {
-      const scrollPos = el.scrollLeft;
-      const firstChild = el.firstElementChild as HTMLElement;
-      if (!firstChild) return;
-      const cardWidth = firstChild.offsetWidth;
-      const gap = 20; // gap-5 = 20px
-      const index = Math.round(scrollPos / (cardWidth + gap));
-      if (index !== activeIndex) setActiveIndex(index);
+    const observerOptions = {
+      root: el,
+      threshold: 0.6,
     };
 
-    el.addEventListener("scroll", handleScroll, { passive: true });
-    return () => el.removeEventListener("scroll", handleScroll);
-  }, [activeIndex]);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const index = Number(entry.target.getAttribute("data-index"));
+          setActiveIndex(index);
+        }
+      });
+    }, observerOptions);
+
+    const children = el.querySelectorAll("[data-index]");
+    children.forEach((child) => observer.observe(child));
+
+    return () => observer.disconnect();
+  }, []);
 
   const scrollTo = (index: number) => {
     const el = scrollRef.current;
@@ -61,12 +67,11 @@ const MobileSitesCarousel = ({
         {sites.map((site, i) => (
           <div
             key={site.id}
+            data-index={i}
             onClick={() => onSiteClick(site)}
-            className="flex-shrink-0 w-[75vw] h-[480px] snap-start rounded-[30px] overflow-hidden relative border border-white/10 transition-all duration-500 ease-out cursor-pointer"
-            style={{
-              transform: activeIndex === i ? "scale(1)" : "scale(0.92)",
-              opacity: activeIndex === i ? 1 : 0.5,
-            }}
+            className={`flex-shrink-0 w-[75vw] h-[480px] snap-start rounded-[30px] overflow-hidden relative border transition-all duration-500 ease-out cursor-pointer ${
+              activeIndex === i ? "border-orange-500/40 shadow-[0_0_40px_rgba(234,88,12,0.1)]" : "border-white/10"
+            }`}
           >
             <Image
               src={site.image}
@@ -74,6 +79,18 @@ const MobileSitesCarousel = ({
               fill
               className="object-cover"
             />
+
+            {/* Cinematic Glow Overlay for Active Card */}
+            <div
+              className={`absolute inset-0 transition-opacity duration-700 pointer-events-none ${
+                activeIndex === i ? "opacity-100" : "opacity-0"
+              }`}
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 0%, rgba(234, 88, 12, 0.2), transparent 75%)",
+              }}
+            />
+
             <div className="absolute inset-0 bg-gradient-to-t from-[#0b0d10] via-[#0b0d10]/40 to-transparent opacity-90" />
 
             <div className="absolute top-6 right-6 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10">
@@ -235,7 +252,7 @@ const SitesDevelopedComponent = () => {
               <div className="flex items-center gap-6 mb-8 opacity-60">
                 <div className="w-12 h-px bg-orange-500" />
                 <span className="text-[0.6rem] font-bold tracking-[0.6em] uppercase text-white">
-                  Our Digital Footprint
+                  MGD GROUP'S Footprint
                 </span>
                 <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent" />
               </div>

@@ -104,7 +104,7 @@ const services = [
 
 type Service = (typeof services)[number];
 
-const CardInner = ({ svc }: { svc: Service }) => (
+const CardInner = ({ svc, isActive }: { svc: Service; isActive?: boolean }) => (
   <>
     <div className="relative w-full overflow-hidden flex-shrink-0 h-[55%] md:h-[180px] lg:h-[200px]">
       <Image
@@ -120,7 +120,7 @@ const CardInner = ({ svc }: { svc: Service }) => (
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#0b0d10]" />
       <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        className={`absolute inset-0 transition-opacity duration-500 ${isActive ? "opacity-100" : "opacity-0 md:group-hover:opacity-100"}`}
         style={{
           background: `radial-gradient(ellipse 80% 80% at 50% 0%, ${svc.glassAccent} 0%, transparent 70%)`,
         }}
@@ -169,19 +169,25 @@ const MobileServiceCarousel = ({ cards }: { cards: readonly Service[] }) => {
     const el = scrollRef.current;
     if (!el) return;
 
-    const handleScroll = () => {
-      const scrollPos = el.scrollLeft;
-      const firstChild = el.firstElementChild as HTMLElement;
-      if (!firstChild) return;
-      const cardWidth = firstChild.offsetWidth;
-      const gap = 16;
-      const index = Math.round(scrollPos / (cardWidth + gap));
-      if (index !== activeIndex) setActiveIndex(index);
+    const observerOptions = {
+      root: el,
+      threshold: 0.6, // Trigger when 60% of the card is visible
     };
 
-    el.addEventListener("scroll", handleScroll, { passive: true });
-    return () => el.removeEventListener("scroll", handleScroll);
-  }, [activeIndex]);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const index = Number(entry.target.getAttribute("data-index"));
+          setActiveIndex(index);
+        }
+      });
+    }, observerOptions);
+
+    const children = el.querySelectorAll("[data-index]");
+    children.forEach((child) => observer.observe(child));
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className="md:hidden relative mb-12">
@@ -197,14 +203,15 @@ const MobileServiceCarousel = ({ cards }: { cards: readonly Service[] }) => {
         {cards.map((svc, i) => (
           <div
             key={svc.id}
+            data-index={i}
             className="flex-shrink-0 w-[80vw] max-w-[300px] h-[440px] snap-start rounded-[30px] overflow-hidden transition-all duration-500 ease-out border border-white/10"
             style={{
               background: `linear-gradient(145deg, ${svc.gradient.from}, ${svc.gradient.to})`,
-              transform: activeIndex === i ? "scale(1)" : "scale(0.92)",
-              opacity: activeIndex === i ? 1 : 0.5,
+              opacity: 1,
+              transform: "scale(1)",
             }}
           >
-            <CardInner svc={svc} />
+            <CardInner svc={svc} isActive={activeIndex === i} />
           </div>
         ))}
       </div>
@@ -219,7 +226,7 @@ const MobileServiceCarousel = ({ cards }: { cards: readonly Service[] }) => {
               if (el) {
                 const cardWidth = (el.firstElementChild as HTMLElement)
                   .offsetWidth;
-                el.scrollTo({ left: i * (cardWidth + 16), behavior: "smooth" });
+                el.scrollTo({ left: i * (cardWidth + 20), behavior: "smooth" });
               }
             }}
             className="relative h-1.5 transition-all duration-500 ease-in-out rounded-full overflow-hidden"
@@ -293,8 +300,9 @@ const OurServicesComponent = () => {
             <span className="font-bold text-[#ff4500]">Every Challenge.</span>
           </h2>
           <p className="text-[0.95rem] leading-[1.8] text-white/55 max-w-[560px]">
-            From a single residence to a national highway — MGD Group brings 25+
-            years of precision engineering across every discipline.
+            From a single residence to a large scale infrastructure projects -
+            MGD Group brings 15+ years of precision engineering across every
+            discipline.
           </p>
         </div>
 

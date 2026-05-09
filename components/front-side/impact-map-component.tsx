@@ -146,8 +146,9 @@ const ImpactMapComponent = () => {
               <div className="flex items-center gap-6 opacity-60">
                 <div className="w-12 h-px bg-orange-500" />
                 <span className="text-[0.6rem] font-bold tracking-[0.6em] uppercase text-white">
-                  Our Impact
+                  MGD GROUP'S Impact
                 </span>
+                <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent " />
               </div>
 
               <h2 className="text-[clamp(2rem,4vw,4.5rem)] font-light leading-[1] tracking-[-0.04em] uppercase text-white">
@@ -167,52 +168,33 @@ const ImpactMapComponent = () => {
             {/* Metrics Grid */}
             <div className="grid grid-cols-2 gap-10 pt-6 border-t border-white/10">
               <div className="space-y-2">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  className="text-4xl md:text-5xl font-black text-white"
-                >
+                <div className="text-4xl md:text-5xl font-black text-white">
                   05
-                </motion.div>
+                </div>
                 <div className="text-[0.6rem] font-bold uppercase tracking-[0.3em] text-white/30">
                   Provinces Reached
                 </div>
               </div>
               <div className="space-y-2">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-4xl md:text-5xl font-black text-white"
-                >
+                <div className="text-4xl md:text-5xl font-black text-white">
                   08+
-                </motion.div>
+                </div>
                 <div className="text-[0.6rem] font-bold uppercase tracking-[0.3em] text-white/30">
                   Major Sites Developed
                 </div>
               </div>
               <div className="space-y-2">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-4xl md:text-5xl font-black text-white"
-                >
+                <div className="text-4xl md:text-5xl font-black text-white">
                   12
-                </motion.div>
+                </div>
                 <div className="text-[0.6rem] font-bold uppercase tracking-[0.3em] text-white/30">
                   Upcoming Projects
                 </div>
               </div>
               <div className="space-y-2">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-4xl md:text-5xl font-black text-white"
-                >
+                <div className="text-4xl md:text-5xl font-black text-white">
                   100%
-                </motion.div>
+                </div>
                 <div className="text-[0.6rem] font-bold uppercase tracking-[0.3em] text-white/30">
                   Sri Lankan Owned
                 </div>
@@ -222,14 +204,9 @@ const ImpactMapComponent = () => {
 
           {/* Right Side: Interactive Map */}
           <div className="w-full lg:w-[60%]">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8 }}
-              className="relative rounded-[48px] overflow-hidden shadow-[0_0_100px_rgba(234,88,12,0.1)] border border-white/5"
-            >
+            <div className="relative rounded-[48px] overflow-hidden shadow-[0_0_100px_rgba(234,88,12,0.1)] border border-white/5">
               <SriLankaMap onSiteClick={handleSiteClick} />
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>

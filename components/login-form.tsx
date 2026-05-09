@@ -60,7 +60,7 @@ export function LoginForm({
               <div className="relative z-10 flex flex-col items-center text-center">
                 <div className="mb-8 p-4 bg-white dark:bg-slate-800 rounded-3xl shadow-xl ring-1 ring-slate-200 dark:ring-slate-700">
                   <Image
-                    src="/logo.png"
+                    src="/logo2.jpg"
                     alt="Inka Valley Logo"
                     width={180}
                     height={180}
@@ -82,7 +82,7 @@ export function LoginForm({
               <div className="mx-auto w-full max-w-sm">
                 <div className="mb-8 md:hidden flex justify-center">
                   <Image
-                    src="/logo.png"
+                    src="/logo2.jpg"
                     alt="Inka Valley Logo"
                     width={80}
                     height={80}
