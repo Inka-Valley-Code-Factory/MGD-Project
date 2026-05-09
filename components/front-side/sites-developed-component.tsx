@@ -62,16 +62,27 @@ const MobileSitesCarousel = ({
 
       <div
         ref={scrollRef}
-        className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-5 px-5 pb-4"
+        className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-5 px-8 pb-8"
+        style={{ perspective: "1200px", transformStyle: "preserve-3d" }}
       >
         {sites.map((site, i) => (
-          <div
+          <motion.div
             key={site.id}
             data-index={i}
             onClick={() => onSiteClick(site)}
-            className={`flex-shrink-0 w-[75vw] h-[480px] snap-start rounded-[30px] overflow-hidden relative border transition-all duration-500 ease-out cursor-pointer ${
-              activeIndex === i ? "border-orange-500/40 shadow-[0_0_40px_rgba(234,88,12,0.1)]" : "border-white/10"
-            }`}
+            className="flex-shrink-0 w-[75vw] h-[520px] snap-center rounded-[40px] overflow-hidden relative border border-white/10 cursor-pointer"
+            animate={{
+              rotateY: activeIndex === i ? 0 : activeIndex < i ? 20 : -20,
+              scale: activeIndex === i ? 1.02 : 0.88,
+              z: activeIndex === i ? 0 : -100,
+              opacity: activeIndex === i ? 1 : 0.5,
+              x: activeIndex === i ? 0 : activeIndex < i ? -20 : 20,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 200,
+              damping: 25,
+            }}
           >
             <Image
               src={site.image}
@@ -110,7 +121,7 @@ const MobileSitesCarousel = ({
                 {site.description}
               </p>
             </div>
-          </div>
+          </motion.div>
         ))}
 
         {/* SHOW MORE CARD */}

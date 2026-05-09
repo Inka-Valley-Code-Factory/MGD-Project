@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 
 /* ─── Service data ──────────────────────────────────────────── */
 const services = [
@@ -198,21 +199,31 @@ const MobileServiceCarousel = ({ cards }: { cards: readonly Service[] }) => {
 
       <div
         ref={scrollRef}
-        className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-5 px-5 pb-4"
+        className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-5 px-5 pb-8"
+        style={{ perspective: "2000px", transformStyle: "preserve-3d" }}
       >
         {cards.map((svc, i) => (
-          <div
+          <motion.div
             key={svc.id}
             data-index={i}
-            className="flex-shrink-0 w-[80vw] max-w-[300px] h-[440px] snap-start rounded-[30px] overflow-hidden transition-all duration-500 ease-out border border-white/10"
+            className="flex-shrink-0 w-[80vw] max-w-[300px] h-[460px] snap-center rounded-[30px] overflow-hidden border border-white/10"
             style={{
               background: `linear-gradient(145deg, ${svc.gradient.from}, ${svc.gradient.to})`,
-              opacity: 1,
-              transform: "scale(1)",
+            }}
+            animate={{
+              rotateY: activeIndex === i ? 0 : activeIndex < i ? 12 : -12,
+              scale: activeIndex === i ? 1 : 0.94,
+              opacity: activeIndex === i ? 1 : 0.6,
+              translateZ: activeIndex === i ? 0 : -40,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 260,
+              damping: 25,
             }}
           >
             <CardInner svc={svc} isActive={activeIndex === i} />
-          </div>
+          </motion.div>
         ))}
       </div>
 
