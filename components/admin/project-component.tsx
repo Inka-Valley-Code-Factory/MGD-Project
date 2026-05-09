@@ -1,7 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { ChevronDown, ChevronUp, Plus, RefreshCw, UploadCloud, X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+	ChevronDown,
+	ChevronRight,
+	ChevronUp,
+	Plus,
+	RefreshCw,
+	UploadCloud,
+	X,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,11 +34,18 @@ type Variation = {
 
 type Project = {
 	id: string;
+	category_id?: string | null;
 	name: string;
 	description: string | null;
 	photo: string[] | null;
 	created_at: string | null;
 	project_variations?: Variation[] | null;
+};
+
+type Category = {
+	id: string;
+	name: string;
+	created_at: string | null;
 };
 
 declare global {
@@ -79,7 +95,7 @@ function Modal({
 				onClick={onClose}
 				aria-hidden="true"
 			/>
-			<Card className="relative w-full max-w-[640px] shadow-lg ring-1 ring-slate-200 dark:ring-slate-800">
+			<Card className="relative w-full max-w-[640px] max-h-[calc(100dvh-2rem)] overflow-hidden shadow-lg ring-1 ring-slate-200 dark:ring-slate-800 flex flex-col">
 				<CardHeader className="flex flex-row items-start justify-between gap-4">
 					<div className="min-w-0">
 						<CardTitle className="truncate">{title}</CardTitle>
@@ -95,13 +111,32 @@ function Modal({
 						<X aria-hidden="true" />
 					</Button>
 				</CardHeader>
-				<CardContent>{children}</CardContent>
+				<CardContent className="flex-1 overflow-auto">{children}</CardContent>
 			</Card>
 		</div>
 	);
 }
 
 export default function ProjectComponent() {
+	const router = useRouter();
+	const searchParams = useSearchParams();
+
+	const [categories, setCategories] = useState<Category[]>([]);
+	const [categoriesLoading, setCategoriesLoading] = useState(true);
+	const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+	const [categoryQuery, setCategoryQuery] = useState("");
+	const [createCategoryOpen, setCreateCategoryOpen] = useState(false);
+	const [categoryName, setCategoryName] = useState("");
+	const selectedCategory = useMemo(() => {
+		if (!selectedCategoryId) return null;
+		return categories.find((c) => c.id === selectedCategoryId) ?? null;
+	}, [categories, selectedCategoryId]);
+	const filteredCategories = useMemo(() => {
+		const q = categoryQuery.trim().toLowerCase();
+		if (!q) return categories;
+		return categories.filter((c) => c.name.toLowerCase().includes(q));
+	}, [categories, categoryQuery]);
+
 	const [projects, setProjects] = useState<Project[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [busy, setBusy] = useState(false);
@@ -161,11 +196,83 @@ export default function ProjectComponent() {
 		setProjectPhotos([]);
 	}
 
+	function resetCategoryForm() {
+		setCategoryName("");
+	}
+
 	function resetVariationForm() {
 		setVariationName("");
 		setVariationDescription("");
 		setVariationPrice("");
 	}
+
+	useEffect(() => {
+		const urlCategoryId = searchParams.get("categoryId");
+		setSelectedCategoryId(urlCategoryId && urlCategoryId.trim() ? urlCategoryId : null);
+	}, [searchParams]);
+
+	async function loadCategories() {
+		setCategoriesLoading(true);
+		try {
+			const res = await fetch("/api/categories", { cache: "no-store" });
+			const contentType = res.headers.get("content-type") || "";
+			const json = contentType.includes("application/json")
+				? ((await res.json()) as { categories?: Category[]; error?: string })
+				: null;
+			if (!res.ok) {
+				if (json?.error) throw new Error(json.error);
+				const text = await res.text();
+				throw new Error(
+					`Failed to load categories (HTTP ${res.status}). Received non-JSON response: ${text.slice(0, 120)}…`,
+				);
+			}
+			setCategories(Array.isArray(json?.categories) ? json.categories : []);
+		} catch (e) {
+			setError(e instanceof Error ? e.message : "Failed to load categories");
+		} finally {
+			setCategoriesLoading(false);
+		}
+	}
+
+	function openCreateCategory() {
+		resetCategoryForm();
+		setCreateCategoryOpen(true);
+	}
+
+	async function submitCreateCategory() {
+		setBusy(true);
+		setError(null);
+		try {
+			if (!categoryName.trim()) throw new Error("Category name is required");
+			const res = await fetch("/api/categories", {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({ name: categoryName.trim() }),
+			});
+			const contentType = res.headers.get("content-type") || "";
+			const json = contentType.includes("application/json")
+				? ((await res.json()) as { category?: Category; error?: string })
+				: null;
+			if (!res.ok || !json?.category) {
+				if (json?.error) throw new Error(json.error);
+				const text = await res.text();
+				throw new Error(
+					`Failed to create category (HTTP ${res.status}). Received non-JSON response: ${text.slice(0, 120)}…`,
+				);
+			}
+			setCreateCategoryOpen(false);
+			resetCategoryForm();
+			await loadCategories();
+		} catch (e) {
+			setError(e instanceof Error ? e.message : "Create failed");
+		} finally {
+			setBusy(false);
+		}
+	}
+
+	useEffect(() => {
+		void loadCategories();
+	}, []);
 
 	useEffect(() => {
 		const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
@@ -255,11 +362,12 @@ export default function ProjectComponent() {
 		);
 	}
 
-	async function loadProjects() {
+	async function loadProjects(categoryId?: string | null) {
 		setLoading(true);
 		setError(null);
 		try {
-			const res = await fetch("/api/projects", { cache: "no-store" });
+			const url = categoryId ? `/api/projects?categoryId=${encodeURIComponent(categoryId)}` : "/api/projects";
+			const res = await fetch(url, { cache: "no-store" });
 			const contentType = res.headers.get("content-type") || "";
 			const json = contentType.includes("application/json")
 				? ((await res.json()) as { projects?: Project[]; error?: string })
@@ -280,8 +388,9 @@ export default function ProjectComponent() {
 	}
 
 	useEffect(() => {
-		void loadProjects();
-	}, []);
+		if (!selectedCategoryId) return;
+		void loadProjects(selectedCategoryId);
+	}, [selectedCategoryId]);
 
 	function openCreateProject() {
 		resetProjectForm();
@@ -324,11 +433,13 @@ export default function ProjectComponent() {
 		setBusy(true);
 		setError(null);
 		try {
+			if (!selectedCategoryId) throw new Error("Select a category first");
 			if (!projectName.trim()) throw new Error("Project name is required");
 			const res = await fetch("/api/projects", {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({
+					category_id: selectedCategoryId,
 					name: projectName.trim(),
 					description: projectDescription.trim() ? projectDescription.trim() : null,
 					photo: projectPhotos,
@@ -347,7 +458,7 @@ export default function ProjectComponent() {
 			}
 			setCreateProjectOpen(false);
 			resetProjectForm();
-			await loadProjects();
+			await loadProjects(selectedCategoryId);
 		} catch (e) {
 			setError(e instanceof Error ? e.message : "Create failed");
 		} finally {
@@ -360,11 +471,13 @@ export default function ProjectComponent() {
 		setBusy(true);
 		setError(null);
 		try {
+			if (!selectedCategoryId) throw new Error("Select a category first");
 			if (!projectName.trim()) throw new Error("Project name is required");
 			const res = await fetch(`/api/projects/${editProject.id}`, {
 				method: "PUT",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({
+					category_id: selectedCategoryId,
 					name: projectName.trim(),
 					description: projectDescription.trim() ? projectDescription.trim() : null,
 					photo: projectPhotos,
@@ -383,7 +496,7 @@ export default function ProjectComponent() {
 			}
 			setEditProject(null);
 			resetProjectForm();
-			await loadProjects();
+			await loadProjects(selectedCategoryId);
 		} catch (e) {
 			setError(e instanceof Error ? e.message : "Update failed");
 		} finally {
@@ -410,7 +523,7 @@ export default function ProjectComponent() {
 					`Failed to delete project (HTTP ${res.status}). Received non-JSON response: ${text.slice(0, 120)}…`,
 				);
 			}
-			await loadProjects();
+			await loadProjects(selectedCategoryId);
 		} catch (e) {
 			setError(e instanceof Error ? e.message : "Delete failed");
 		} finally {
@@ -460,7 +573,7 @@ export default function ProjectComponent() {
 				}
 				setVariationModal(null);
 				resetVariationForm();
-				await loadProjects();
+				await loadProjects(selectedCategoryId);
 				return;
 			}
 
@@ -489,7 +602,7 @@ export default function ProjectComponent() {
 			}
 			setVariationModal(null);
 			resetVariationForm();
-			await loadProjects();
+			await loadProjects(selectedCategoryId);
 		} catch (e) {
 			setError(e instanceof Error ? e.message : "Save failed");
 		} finally {
@@ -518,7 +631,7 @@ export default function ProjectComponent() {
 					`Failed to delete variation (HTTP ${res.status}). Received non-JSON response: ${text.slice(0, 120)}…`,
 				);
 			}
-			await loadProjects();
+			await loadProjects(selectedCategoryId);
 		} catch (e) {
 			setError(e instanceof Error ? e.message : "Delete failed");
 		} finally {
@@ -534,6 +647,148 @@ export default function ProjectComponent() {
 		: "Update or delete this project.";
 	const projectSubmitLabel = createProjectOpen ? "Create" : "Save";
 
+	if (!selectedCategoryId) {
+		return (
+			<div className="max-w-[1400px] mx-auto w-full p-8">
+				<div className="flex items-start justify-between gap-4 mb-10">
+					<div>
+						<h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+							Project Categories
+						</h1>
+						<p className="text-slate-500 dark:text-slate-400 mt-2">
+							Select a category to manage its projects.
+						</p>
+					</div>
+					<div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+						<div className="w-full sm:w-[320px]">
+							<Input
+								value={categoryQuery}
+								onChange={(e) => setCategoryQuery(e.target.value)}
+								placeholder="Search categories…"
+								aria-label="Search categories"
+								disabled={categoriesLoading}
+							/>
+						</div>
+						<Button
+							variant="secondary"
+							onClick={() => void loadCategories()}
+							disabled={categoriesLoading}
+						>
+							<RefreshCw aria-hidden="true" />
+							Refresh
+						</Button>
+						<Button onClick={openCreateCategory} disabled={busy}>
+							<Plus aria-hidden="true" />
+							Create Category
+						</Button>
+					</div>
+				</div>
+
+				{error ? (
+					<Card className="mb-6 border-red-200 dark:border-red-900">
+						<CardHeader>
+							<CardTitle className="text-red-600 dark:text-red-400">
+								Action failed
+							</CardTitle>
+							<CardDescription>{error}</CardDescription>
+						</CardHeader>
+					</Card>
+				) : null}
+
+				{categoriesLoading ? (
+					<Card>
+						<CardHeader>
+							<CardTitle>Loading…</CardTitle>
+						</CardHeader>
+					</Card>
+				) : categories.length === 0 ? (
+					<Card>
+						<CardHeader>
+							<CardTitle>No categories yet</CardTitle>
+							<CardDescription>
+								Click “Create Category” to add your first category.
+							</CardDescription>
+						</CardHeader>
+					</Card>
+				) : filteredCategories.length === 0 ? (
+					<Card>
+						<CardHeader>
+							<CardTitle>No matching categories</CardTitle>
+							<CardDescription>
+								Try a different search term.
+							</CardDescription>
+						</CardHeader>
+					</Card>
+				) : (
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+						{filteredCategories.map((c) => (
+							<button
+								type="button"
+								key={c.id}
+								onClick={() => router.push(`/protected/projects?categoryId=${encodeURIComponent(c.id)}`)}
+								className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:focus-visible:ring-slate-600 rounded-lg"
+								aria-label={`Open category ${c.name}`}
+							>
+								<Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ring-1 ring-slate-200 dark:ring-slate-800">
+									<CardHeader className="flex flex-row items-start justify-between gap-4">
+										<div className="min-w-0">
+											<CardTitle className="text-xl font-bold text-slate-900 dark:text-white truncate">
+												{c.name}
+											</CardTitle>
+											
+										</div>
+										<ChevronRight
+											aria-hidden="true"
+											className="text-slate-400 dark:text-slate-500 mt-1"
+										/>
+									</CardHeader>
+								</Card>
+							</button>
+						))}
+					</div>
+				)}
+
+				<Modal
+					open={createCategoryOpen}
+					title="Create Category"
+					description="Add a new project category."
+					onClose={() => setCreateCategoryOpen(false)}
+				>
+					<div className="space-y-5">
+						<div className="space-y-2">
+							<Label htmlFor="category-name">Name</Label>
+							<Input
+								id="category-name"
+								value={categoryName}
+								onChange={(e) => setCategoryName(e.target.value)}
+								placeholder="Category name"
+								autoFocus
+								disabled={busy}
+							/>
+						</div>
+						<div className="flex items-center justify-end gap-3">
+							<Button
+								type="button"
+								variant="secondary"
+								onClick={() => setCreateCategoryOpen(false)}
+								disabled={busy}
+							>
+								Cancel
+							</Button>
+							<Button
+								type="button"
+								onClick={() => void submitCreateCategory()}
+								disabled={busy}
+							>
+								{busy ? "Saving…" : "Create"}
+							</Button>
+						</div>
+					</div>
+				</Modal>
+			</div>
+		);
+	}
+
 	return (
 		<div className="max-w-[1400px] mx-auto w-full p-8">
 			<div className="flex items-start justify-between gap-4 mb-10">
@@ -541,11 +796,21 @@ export default function ProjectComponent() {
 					<h1 className="text-3xl font-bold text-slate-900 dark:text-white">
 						Projects
 					</h1>
-					<p className="text-slate-500 dark:text-slate-400 mt-2">
-						Create projects, manage variations, and keep everything up to date.
-					</p>
+					
+					{selectedCategory ? (
+						<div className="mt-2 text-medium text-slate-500 dark:text-slate-400">
+							Category: <span className="font-semibold text-slate-900 dark:text-white">{selectedCategory.name}</span>
+						</div>
+					) : null}
 				</div>
 				<div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+					<Button
+						variant="secondary"
+						onClick={() => router.push("/protected/projects")}
+						disabled={busy || uploading}
+					>
+						Back to Categories
+					</Button>
 					<div className="w-full sm:w-[320px]">
 						<Input
 							value={searchQuery}
@@ -557,7 +822,7 @@ export default function ProjectComponent() {
 					</div>
 					<Button
 						variant="secondary"
-						onClick={() => void loadProjects()}
+						onClick={() => void loadProjects(selectedCategoryId)}
 						disabled={loading || busy || uploading}
 					>
 						<RefreshCw aria-hidden="true" />
@@ -611,7 +876,7 @@ export default function ProjectComponent() {
 							key={project.id}
 							className="overflow-hidden shadow-lg ring-1 ring-slate-200 dark:ring-slate-800"
 						>
-							<CardHeader className="flex flex-row items-start justify-between gap-4">
+							<CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 								<div className="min-w-0">
 									<CardTitle className="text-xl font-bold text-slate-900 dark:text-white truncate">
 										{project.name}
@@ -622,7 +887,7 @@ export default function ProjectComponent() {
 											: "No description"}
 									</CardDescription>
 								</div>
-								<div className="flex items-center gap-2">
+								<div className="flex flex-wrap items-center justify-end gap-2">
 									<Button
 										variant="secondary"
 										size="sm"
@@ -656,7 +921,7 @@ export default function ProjectComponent() {
 									Photos: {Array.isArray(project.photo) ? project.photo.length : 0}
 								</div>
 								{Array.isArray(project.photo) && project.photo.length > 0 ? (
-									<div className="grid grid-cols-4 gap-2">
+									<div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
 										{project.photo.slice(0, 4).map((url) => (
 											<div
 												key={url}
@@ -726,7 +991,7 @@ export default function ProjectComponent() {
 																		: "—"}
 																</div>
 															</div>
-															<div className="flex items-center gap-2">
+															<div className="flex flex-wrap items-center gap-2 shrink-0">
 																<Button
 																	variant="secondary"
 																	size="sm"
@@ -778,6 +1043,7 @@ export default function ProjectComponent() {
 							value={projectName}
 							onChange={(e) => setProjectName(e.target.value)}
 							placeholder="Project name"
+							autoFocus
 							disabled={formDisabled}
 						/>
 					</div>
@@ -813,7 +1079,7 @@ export default function ProjectComponent() {
 						</div>
 
 						{projectPhotos.length > 0 ? (
-							<div className="grid grid-cols-4 gap-2">
+							<div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
 								{projectPhotos.map((url) => (
 									<div
 										key={url}
@@ -891,6 +1157,7 @@ export default function ProjectComponent() {
 							value={variationName}
 							onChange={(e) => setVariationName(e.target.value)}
 							placeholder="Variation name"
+							autoFocus
 							disabled={formDisabled}
 						/>
 					</div>

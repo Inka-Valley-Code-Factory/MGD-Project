@@ -3,12 +3,9 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
-type ProjectRow = {
+type CategoryRow = {
   id: string;
-  category_id?: string | null;
   name: string;
-  description: string | null;
-  photo: string[] | null;
   created_at: string | null;
 };
 
@@ -36,13 +33,13 @@ export async function GET(
   }
 
   if (typeof id !== "string" || !isUuid(id)) {
-    return NextResponse.json({ error: "Invalid project id" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid category id" }, { status: 400 });
   }
 
   const admin = createAdminClient();
   const { data, error } = await admin
-    .from("projects")
-    .select("id,category_id,name,description,photo,created_at")
+    .from("categories")
+    .select("id,name,created_at")
     .eq("id", id)
     .single();
 
@@ -50,7 +47,7 @@ export async function GET(
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ project: data as ProjectRow });
+  return NextResponse.json({ category: data as CategoryRow });
 }
 
 export async function PUT(
@@ -64,7 +61,7 @@ export async function PUT(
   }
 
   if (typeof id !== "string" || !isUuid(id)) {
-    return NextResponse.json({ error: "Invalid project id" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid category id" }, { status: 400 });
   }
 
   let body: unknown;
@@ -74,47 +71,24 @@ export async function PUT(
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { category_id, name, description, photo } = body as {
-    category_id?: unknown;
-    name?: unknown;
-    description?: unknown;
-    photo?: unknown;
-  };
-
+  const { name } = body as { name?: unknown };
   if (typeof name !== "string" || !name.trim()) {
     return NextResponse.json({ error: "Name is required" }, { status: 400 });
   }
 
-  const normalizedPhotos = Array.isArray(photo)
-    ? photo.filter((x): x is string => typeof x === "string" && x.length > 0)
-    : [];
-
-  const normalizedCategoryId =
-    typeof category_id === "string" && category_id.trim()
-      ? category_id.trim()
-      : null;
-  if (normalizedCategoryId && !isUuid(normalizedCategoryId)) {
-    return NextResponse.json({ error: "Invalid category_id" }, { status: 400 });
-  }
-
   const admin = createAdminClient();
   const { data, error } = await admin
-    .from("projects")
-    .update({
-      ...(normalizedCategoryId ? { category_id: normalizedCategoryId } : {}),
-      name: name.trim(),
-      description: typeof description === "string" ? description : null,
-      photo: normalizedPhotos,
-    })
+    .from("categories")
+    .update({ name: name.trim() })
     .eq("id", id)
-    .select("id,category_id,name,description,photo,created_at")
+    .select("id,name,created_at")
     .single();
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ project: data as ProjectRow });
+  return NextResponse.json({ category: data as CategoryRow });
 }
 
 export async function DELETE(
@@ -128,11 +102,11 @@ export async function DELETE(
   }
 
   if (typeof id !== "string" || !isUuid(id)) {
-    return NextResponse.json({ error: "Invalid project id" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid category id" }, { status: 400 });
   }
 
   const admin = createAdminClient();
-  const { error } = await admin.from("projects").delete().eq("id", id);
+  const { error } = await admin.from("categories").delete().eq("id", id);
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
