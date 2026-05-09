@@ -636,11 +636,11 @@ const ProjectShowcasePage = () => {
                       <div className="space-y-3">
                         <label className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-white/30">Direct Inquiries</label>
                         <div className="flex flex-col gap-2">
-                          <a href="tel:+94112345678" className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all group">
+                          <a href="tel:+94777142061" className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all group">
                              <div className="w-8 h-8 rounded-lg bg-orange-600/20 flex items-center justify-center text-orange-500">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                              </div>
-                             <span className="text-xs font-bold text-white/80">+94 (11) 234 5678</span>
+                             <span className="text-xs font-bold text-white/80">+94 (77) 714 2061</span>
                           </a>
                           <a href="mailto:hello@mgdgroup.com" className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all group">
                              <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center text-blue-400">
@@ -653,7 +653,7 @@ const ProjectShowcasePage = () => {
 
                       {/* WhatsApp Button */}
                       <a 
-                        href={`https://wa.me/94771234567?text=${encodeURIComponent(`මම ${selectedProject.name}${selectedVariant ? ` හි ${selectedVariant.name}` : ""} ගැන වැඩි විස්තර දැන ගැනීමට කැමතියි.`)}`}
+                        href={`https://wa.me/94777142061?text=${encodeURIComponent(`මම ${selectedProject.name}${selectedVariant ? ` හි ${selectedVariant.name}` : ""} ගැන වැඩි විස්තර දැන ගැනීමට කැමතියි.`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-3 w-full py-4 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-xl shadow-lg shadow-green-600/20 transition-all group active:scale-[0.98]"

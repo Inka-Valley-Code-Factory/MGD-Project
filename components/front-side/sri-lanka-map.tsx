@@ -75,6 +75,9 @@ const SriLankaMap = ({ onSiteClick }: SriLankaMapProps) => {
         .leaflet-control-zoom a:hover {
           background: rgba(255, 255, 255, 0.1) !important;
         }
+        .leaflet-control-attribution {
+          display: none !important;
+        }
       `}</style>
 
       <MapContainer
@@ -86,6 +89,7 @@ const SriLankaMap = ({ onSiteClick }: SriLankaMapProps) => {
         maxBoundsViscosity={1.0}
         zoomControl={false}
         scrollWheelZoom={false}
+        attributionControl={false}
         className="w-full h-full"
       >
         {/* Real Satellite/Dark Map Layer */}

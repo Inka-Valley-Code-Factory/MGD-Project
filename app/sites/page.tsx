@@ -462,7 +462,7 @@ const AllSitesPage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                       <a
-                        href="tel:+94112345678"
+                        href="tel:+94777142061"
                         className="flex items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all group"
                       >
                         <div className="w-10 h-10 rounded-xl bg-orange-600/20 flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
@@ -478,7 +478,7 @@ const AllSitesPage = () => {
                           </svg>
                         </div>
                         <span className="text-xs font-bold text-white">
-                          +94 (11) 234 5678
+                          +94 (77) 714 2061
                         </span>
                       </a>
 
@@ -506,7 +506,7 @@ const AllSitesPage = () => {
                     </div>
 
                     <a
-                      href={`https://wa.me/94771234567?text=${encodeURIComponent(`මම ${selectedSite.name} ගැන වැඩි විස්තර දැන ගැනීමට කැමතියි.`)}`}
+                      href={`https://wa.me/94777142061?text=${encodeURIComponent(`මම ${selectedSite.name} ගැන වැඩි විස්තර දැන ගැනීමට කැමතියි.`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center justify-center gap-3 w-full py-5 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-2xl shadow-lg shadow-green-600/20 transition-all active:scale-[0.98]"

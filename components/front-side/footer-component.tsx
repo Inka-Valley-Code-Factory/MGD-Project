@@ -132,7 +132,7 @@ const FooterComponent = () => {
             </h4>
             <div className="flex flex-col gap-4">
               <a
-                href="tel:+94112345678"
+                href="tel:+94777142061"
                 className="flex items-start gap-4 group p-3 -m-3 rounded-2xl transition-all hover:bg-white/[0.05]"
               >
                 <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center shrink-0 group-hover:bg-orange-500 group-hover:text-white transition-all">
@@ -150,7 +150,7 @@ const FooterComponent = () => {
                 </div>
                 <div>
                   <p className="text-white/80 font-bold text-sm">
-                    +94 (77) 770 2147
+                    +94 (77) 714 2061
                   </p>
                   <p className="text-white/30 text-xs mt-1">
                     Direct Support Line

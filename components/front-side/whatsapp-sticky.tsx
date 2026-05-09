@@ -4,7 +4,7 @@ import React from "react";
 import { MessageCircle } from "lucide-react";
 
 const WhatsAppSticky = () => {
-  const phoneNumber = "94771234567"; // Replace with client's actual number
+  const phoneNumber = "94777142061"; // Client's actual number
   const message = "ආයුබෝවන් MGD GROUP! මට ඔබේ සේවාවන් පිළිබඳ වැඩි විස්තර දැන ගැනීමට අවශ්‍යයි.";
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 

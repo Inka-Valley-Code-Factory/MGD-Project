@@ -179,7 +179,7 @@ const PromotionalDrawer = () => {
                         </div>
 
                         <a
-                          href={`https://wa.me/94771234567?text=${encodeURIComponent(`මම ${promoData[activeIndex].title} (Code: ${promoData[activeIndex].code}) ගැන වැඩි විස්තර දැන ගැනීමට කැමතියි.`)}`}
+                          href={`https://wa.me/94777142061?text=${encodeURIComponent(`මම ${promoData[activeIndex].title} (Code: ${promoData[activeIndex].code}) ගැන වැඩි විස්තර දැන ගැනීමට කැමතියි.`)}`}
                           target="_blank"
                           className="w-full py-4 bg-white text-black text-[0.65rem] font-black uppercase tracking-[0.3em] rounded-2xl flex items-center justify-center gap-3 hover:bg-orange-600 hover:text-white transition-all duration-300"
                         >

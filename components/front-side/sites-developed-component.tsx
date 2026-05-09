@@ -63,7 +63,7 @@ const MobileSitesCarousel = ({
       <div
         ref={scrollRef}
         className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-5 px-8 pb-8"
-        style={{ perspective: "1200px", transformStyle: "preserve-3d" }}
+        style={{ perspective: "2000px", transformStyle: "preserve-3d" }}
       >
         {sites.map((site, i) => (
           <motion.div
@@ -72,11 +72,10 @@ const MobileSitesCarousel = ({
             onClick={() => onSiteClick(site)}
             className="flex-shrink-0 w-[75vw] h-[520px] snap-center rounded-[40px] overflow-hidden relative border border-white/10 cursor-pointer"
             animate={{
-              rotateY: activeIndex === i ? 0 : activeIndex < i ? 20 : -20,
-              scale: activeIndex === i ? 1.02 : 0.88,
-              z: activeIndex === i ? 0 : -100,
-              opacity: activeIndex === i ? 1 : 0.5,
-              x: activeIndex === i ? 0 : activeIndex < i ? -20 : 20,
+              rotateY: activeIndex === i ? 0 : activeIndex < i ? 12 : -12,
+              scale: activeIndex === i ? 1 : 0.94,
+              opacity: activeIndex === i ? 1 : 0.6,
+              translateZ: activeIndex === i ? 0 : -40,
             }}
             transition={{
               type: "spring",
@@ -531,7 +530,7 @@ const SitesDevelopedComponent = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                       <a
-                        href="tel:+94112345678"
+                        href="tel:+94777142061"
                         className="flex items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all group"
                       >
                         <div className="w-10 h-10 rounded-xl bg-orange-600/20 flex items-center justify-center text-orange-500">
@@ -547,7 +546,7 @@ const SitesDevelopedComponent = () => {
                           </svg>
                         </div>
                         <span className="text-xs font-bold text-white">
-                          +94 (11) 234 5678
+                          +94 (77) 714 2061
                         </span>
                       </a>
 
@@ -575,7 +574,7 @@ const SitesDevelopedComponent = () => {
                     </div>
 
                     <a
-                      href={`https://wa.me/94771234567?text=${encodeURIComponent(`මම ${selectedSite.name} ගැන වැඩි විස්තර දැන ගැනීමට කැමතියි.`)}`}
+                      href={`https://wa.me/94777142061?text=${encodeURIComponent(`මම ${selectedSite.name} ගැන වැඩි විස්තර දැන ගැනීමට කැමතියි.`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center justify-center gap-3 w-full py-5 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-2xl shadow-lg transition-all"
