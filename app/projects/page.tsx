@@ -1,8 +1,11 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useState, useMemo } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Categories for filtering
 const categories = [
   "All",
   "Residential",
@@ -11,6 +14,7 @@ const categories = [
   "Industrial",
 ];
 
+// Extended Simulated Database with Variations
 const projectsData = [
   {
     id: 1,
@@ -75,7 +79,7 @@ const projectsData = [
       "Critical infrastructure connecting rural communities with precision engineering.",
     location: "Polonnaruwa, SL",
     year: "2022",
-    variations: []
+    variations: [] // No variations
   },
   {
     id: 4,
@@ -146,11 +150,168 @@ const projectsData = [
         description: "Spacious restaurant venue with outdoor seating capability and sunset views."
       }
     ]
-  }
+  },
+  {
+    id: 7,
+    name: "Zenith Plaza",
+    category: "Commercial",
+    image: "/project_tower.png",
+    description:
+      "A futuristic shopping mall with an integrated vertical forest.",
+    location: "Negombo, SL",
+    year: "2024",
+    variations: [
+      {
+        id: "v1",
+        name: "Level 1 Pop-up",
+        price: "$2,000/wk",
+        description: "Flexible short-term kiosk space in the main atrium."
+      },
+      {
+        id: "v2",
+        name: "Anchor Store Unit",
+        price: "Contact for Price",
+        description: "Flagship multi-level space for major international brands."
+      }
+    ]
+  },
+  {
+    id: 8,
+    name: "Green Valley Estate",
+    category: "Residential",
+    image: "/project_villa.png",
+    description: "Eco-friendly residential township with solar-powered homes.",
+    location: "Kurunegala, SL",
+    year: "2023",
+    variations: [
+      {
+        id: "v1",
+        name: "Eco-Villa Type A",
+        price: "$220,000",
+        description: "Modern sustainable home with solar panels and rainwater harvesting."
+      },
+      {
+        id: "v2",
+        name: "Eco-Villa Type B (Plus)",
+        price: "$290,000",
+        description: "Larger footprint with integrated organic garden and EV charging station."
+      }
+    ]
+  },
+  {
+    id: 9,
+    name: "Southern Expressway",
+    category: "Infrastructure",
+    image: "/project_bridge.png",
+    description:
+      "Expansion project involving complex bridge structures and interchanges.",
+    location: "Matara, SL",
+    year: "2022",
+    variations: []
+  },
+  {
+    id: 10,
+    name: "Iron Works Factory",
+    category: "Industrial",
+    image: "/project_tower.png",
+    description:
+      "Heavy industrial facility designed for high-efficiency steel production.",
+    location: "Trincomalee, SL",
+    year: "2024",
+    variations: []
+  },
+  {
+    id: 11,
+    name: "The Pearl Residences",
+    category: "Residential",
+    image: "/project_villa.png",
+    description: "Bespoke beachfront villas with panoramic ocean views.",
+    location: "Bentota, SL",
+    year: "2023",
+    variations: [
+      {
+        id: "v1",
+        name: "Beachside Villa",
+        price: "$850,000",
+        description: "3-bedroom villa just steps away from the sandy shores."
+      },
+      {
+        id: "v2",
+        name: "Royal Ocean Mansion",
+        price: "$2,400,000",
+        description: "Grand 6-bedroom estate with private beach access and butler service."
+      }
+    ]
+  },
+  {
+    id: 12,
+    name: "Lumina Tech Park",
+    category: "Commercial",
+    image: "/project_tower.png",
+    description:
+      "Innovative workspace for technology startups and global enterprises.",
+    location: "Jaffna, SL",
+    year: "2024",
+    variations: [
+      {
+        id: "v1",
+        name: "Start-up Desk",
+        price: "$150/mo",
+        description: "Flexible hot-desk in a vibrant tech-focused environment."
+      },
+      {
+        id: "v2",
+        name: "Custom R&D Lab",
+        price: "Inquire",
+        description: "Specialized lab space with high-load power and secure networking."
+      }
+    ]
+  },
+  {
+    id: 13,
+    name: "Central Rail Hub",
+    category: "Infrastructure",
+    image: "/project_bridge.png",
+    description:
+      "Modernization of the central railway station with high-speed links.",
+    location: "Colombo, SL",
+    year: "2023",
+    variations: []
+  },
+  {
+    id: 14,
+    name: "Agro-Processing Unit",
+    category: "Industrial",
+    image: "/project_tower.png",
+    description:
+      "Cold storage and processing facility for agricultural exports.",
+    location: "Dambulla, SL",
+    year: "2024",
+    variations: []
+  },
+  {
+    id: 15,
+    name: "Heritage Villas",
+    category: "Residential",
+    image: "/project_villa.png",
+    description:
+      "Restoration and expansion of colonial-era villas into boutique residences.",
+    location: "Nuwara Eliya, SL",
+    year: "2022",
+    variations: [
+      {
+        id: "v1",
+        name: "Colonial Suite",
+        price: "$3,500/mo",
+        description: "Historically restored suite with antique furnishings and garden views."
+      }
+    ]
+  },
 ];
 
-const ProjectsComponent = () => {
+const ProjectShowcasePage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
 
@@ -159,49 +320,83 @@ const ProjectsComponent = () => {
     setSelectedVariant(project.variations && project.variations.length > 0 ? project.variations[0] : null);
   };
 
-  const filteredProjects =
-    selectedCategory === "All"
-      ? projectsData
-      : projectsData.filter((p) => p.category === selectedCategory);
+  const filteredProjects = useMemo(() => {
+    return projectsData.filter((project) => {
+      const matchesCategory =
+        selectedCategory === "All" || project.category === selectedCategory;
+      const matchesSearch =
+        project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        project.description.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [selectedCategory, searchQuery]);
 
   return (
-    <section
-      id="portfolio"
-      className="relative bg-[#0b0d10] pt-16 pb-10 w-full overflow-hidden"
-    >
-      {/* Cinematic Noise Texture */}
+    <main className="min-h-screen bg-[#0b0d10] text-white selection:bg-orange-600/30">
+      {/* Cinematic Background Elements */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-overlay z-50"
+        className="fixed inset-0 pointer-events-none opacity-[0.03] mix-blend-overlay z-50"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
         }}
       />
+      <div className="fixed top-0 left-0 w-[80vw] h-[80vh] bg-orange-600/5 rounded-full blur-[140px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+      <div className="fixed bottom-0 right-0 w-[60vw] h-[60vh] bg-orange-600/5 rounded-full blur-[140px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
 
-      {/* Glow Orbs */}
-      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-orange-600/10 rounded-full blur-[140px] -translate-x-1/2 -translate-y-1/2 animate-pulse" />
-      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-orange-600/5 rounded-full blur-[140px] translate-x-1/2 translate-y-1/2" />
-
-      <div className="relative z-10 w-full px-5 md:px-[6vw] lg:px-[8vw]">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
-          <div className="w-full text-center md:text-left">
-            <h2 className="text-[clamp(2.5rem,5vw,5rem)] font-light leading-[1] tracking-[-0.03em] uppercase text-[#d1d1d1]">
-              Excellence In{" "}
-              <span className="font-bold text-white italic">Execution.</span>
-            </h2>
+      {/* Header Section */}
+      <section className="relative z-10 pt-10 pb-12 px-6 md:px-[6vw]">
+        <div className="max-w-[1800px] mx-auto">
+          <div className="flex flex-col gap-4 mb-12">
+            <div className="flex items-center gap-4 text-orange-500 font-bold uppercase tracking-[0.3em] text-[0.6rem] md:text-[0.7rem]">
+              <Link href="/" className="hover:text-white transition-colors">
+                Home
+              </Link>
+              <span className="w-4 h-px bg-white/20" />
+              <span className="text-white/40">Our Projects</span>
+            </div>
+            <h1 className="text-[clamp(2.5rem,8vw,6rem)] font-light leading-[0.9] tracking-[-0.04em] uppercase">
+              Our <span className="font-bold italic text-white">Legacy</span> In{" "}
+              <br />
+              <span className="text-orange-600">Landmarks.</span>
+            </h1>
           </div>
-        </div>
 
-        {/* Cinematic Category Bar */}
-        <div className="relative mb-20 overflow-visible">
-          <div className="flex items-center justify-center">
-            <div className="flex overflow-x-auto no-scrollbar gap-2 md:gap-4 p-2 bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-full snap-x">
+          {/* Search & Filter Bar */}
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 py-6 border-y border-white/10 backdrop-blur-sm sticky top-24 z-40 bg-[#0b0d10]/50 -mx-6 px-6 md:mx-0 md:px-0">
+            {/* Search Input */}
+            <div className="relative w-full lg:w-[400px] group">
+              <input
+                type="text"
+                placeholder="Search projects..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white/[0.03] border border-white/10 rounded-full py-4 px-12 text-sm focus:outline-none focus:border-orange-600/50 transition-all placeholder:text-white/20 group-hover:bg-white/[0.05]"
+              />
+              <svg
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-hover:text-orange-500 transition-colors"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </div>
+
+            {/* Category Tabs */}
+            <div className="flex overflow-x-auto no-scrollbar gap-2 p-1.5 bg-white/[0.03] border border-white/10 rounded-full max-w-full">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-8 py-3 whitespace-nowrap uppercase tracking-[0.25em] text-[0.6rem] font-bold transition-all duration-500 rounded-full snap-start ${
+                  className={`px-6 py-2.5 whitespace-nowrap uppercase tracking-[0.2em] text-[0.6rem] font-bold transition-all duration-300 rounded-full ${
                     selectedCategory === cat
-                      ? "bg-orange-600 text-white shadow-[0_0_20px_rgba(234,88,12,0.3)]"
+                      ? "bg-orange-600 text-white shadow-[0_0_15px_rgba(234,88,12,0.3)]"
                       : "text-white/40 hover:text-white/80 hover:bg-white/5"
                   }`}
                 >
@@ -211,75 +406,111 @@ const ProjectsComponent = () => {
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Projects Grid - 2+1 Mobile Layout */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 lg:gap-12 w-full">
-          {filteredProjects.slice(0, 3).map((project, idx) => (
-            <div
-              key={`${project.id}-${selectedCategory}`}
-              onClick={() => handleProjectClick(project)}
-              className="group relative flex flex-col overflow-hidden rounded-[32px] bg-white/[0.03] border border-white/10 transition-all duration-500 hover:border-white/20 animate-in fade-in slide-in-from-bottom-8 duration-700 cursor-pointer"
-              style={{ animationDelay: `${idx * 150}ms` }}
-            >
-              <div className="relative h-[240px] md:h-[520px] w-full overflow-hidden">
-                <Image
-                  src={project.image}
-                  alt={project.name}
-                  fill
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0b0d10] via-transparent to-transparent opacity-80" />
+      {/* Projects Grid Section */}
+      <section className="relative z-10 px-6 md:px-[6vw] pb-32">
+        <div className="max-w-[1800px] mx-auto">
+          {filteredProjects.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6">
+              {filteredProjects.map((project, idx) => (
+                <div
+                  key={project.id}
+                  onClick={() => handleProjectClick(project)}
+                  className="group relative flex flex-col overflow-hidden rounded-2xl md:rounded-3xl bg-white/[0.02] border border-white/5 transition-all duration-500 hover:border-white/20 animate-in fade-in slide-in-from-bottom-8 cursor-pointer"
+                  style={{ animationDelay: `${idx * 50}ms` }}
+                >
+                  <div className="relative aspect-[4/5] w-full overflow-hidden">
+                    <Image
+                      src={project.image}
+                      alt={project.name}
+                      fill
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 25vw, 20vw"
+                    />
+                    {/* Dark Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0b0d10] via-[#0b0d10]/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
 
-                {/* Content Overlay */}
-                <div className="absolute bottom-0 left-0 p-4 md:p-8 w-full translate-y-2 md:translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="w-8 h-px bg-orange-500" />
-                    <span className="text-[0.6rem] font-bold uppercase tracking-widest text-orange-500">
-                      {project.category}
-                    </span>
+                    {/* Category Badge */}
+                    <div className="absolute top-4 left-4">
+                      <span className="px-3 py-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-full text-[0.5rem] font-bold uppercase tracking-widest text-orange-500">
+                        {project.category}
+                      </span>
+                    </div>
+
+                    {/* Content */}
+                    <div className="absolute inset-x-0 bottom-0 p-4 md:p-6 translate-y-6 group-hover:translate-y-0 transition-transform duration-500">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-4 h-px bg-orange-500" />
+                        <span className="text-[0.5rem] md:text-[0.6rem] font-medium text-white/50 uppercase tracking-tighter">
+                          {project.location} • {project.year}
+                        </span>
+                      </div>
+                      <h3 className="text-sm md:text-lg font-bold uppercase tracking-wide text-white mb-2 line-clamp-1">
+                        {project.name}
+                      </h3>
+                      <p className="text-[0.65rem] md:text-xs text-white/40 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 line-clamp-2">
+                        {project.description}
+                      </p>
+                    </div>
+
+                    {/* Action Icon */}
+                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      <div className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center text-white">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M7 17l9.2-9.2M17 17V7H7" />
+                        </svg>
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="text-xl md:text-2xl font-bold uppercase tracking-wider mb-3 text-white">
-                    {project.name}
-                  </h3>
-                  <p className="text-sm text-white/50 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 line-clamp-2">
-                    {project.description}
-                  </p>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-
-          {/* See More CTA */}
-          <div className="col-span-1 lg:col-span-3 flex items-center justify-center mt-4 md:mt-0">
-            <a
-              href="/projects"
-              className="group relative w-full h-full min-h-[200px] md:min-h-0 md:h-auto md:w-auto px-6 md:px-12 py-5 overflow-hidden rounded-[32px] border border-white/10 flex flex-col items-center justify-center gap-4 bg-white/[0.02] hover:bg-white/[0.05] transition-all"
-            >
-              <span className="w-12 md:hidden h-12 rounded-full bg-orange-600 flex items-center justify-center shadow-[0_0_20px_rgba(234,88,12,0.4)] mb-2">
+          ) : (
+            <div className="flex flex-col items-center justify-center py-40 text-center">
+              <div className="w-20 h-20 rounded-full bg-white/[0.03] border border-white/10 flex items-center justify-center mb-6">
                 <svg
-                  width="20"
-                  height="20"
+                  width="32"
+                  height="32"
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="white"
-                  strokeWidth="2"
+                  stroke="white/20"
+                  strokeWidth="1"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-1-1.73l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                  <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.3-4.3" />
                 </svg>
-              </span>
-              <span className="relative text-white text-[0.6rem] md:text-[0.7rem] font-bold uppercase tracking-[0.3em] text-center">
-                Explore
-                <br className="md:hidden" /> All Projects
-              </span>
-            </a>
-          </div>
+              </div>
+              <h3 className="text-xl font-light text-white/60 mb-2">
+                No projects found
+              </h3>
+              <p className="text-sm text-white/20">
+                Try adjusting your search or category filters.
+              </p>
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedCategory("All");
+                }}
+                className="mt-8 text-orange-500 text-[0.6rem] font-bold uppercase tracking-[0.2em] hover:text-white transition-colors"
+              >
+                Clear all filters
+              </button>
+            </div>
+          )}
         </div>
-      </div>
+      </section>
 
       {/* Project Detail Modal - Liquid Glass Popup */}
       <AnimatePresence>
@@ -328,12 +559,13 @@ const ProjectsComponent = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-transparent via-[#0b0d10]/10 to-[#0b0d10]/60" />
                 
+                {/* Image Overlay Info */}
                 <div className="absolute bottom-6 left-6 right-6">
                   <span className="px-3 py-1 bg-orange-600 rounded-full text-[0.5rem] font-bold uppercase tracking-widest text-white shadow-lg">
                     {selectedProject.category}
                   </span>
                   <div className="mt-3 text-white/50 text-[0.6rem] font-bold uppercase tracking-tighter">
-                    {selectedProject.location || "Colombo, SL"} • {selectedProject.year || "2023"}
+                    {selectedProject.location} • {selectedProject.year}
                   </div>
                 </div>
               </div>
@@ -350,6 +582,7 @@ const ProjectsComponent = () => {
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    {/* Variations Selection */}
                     <div className="space-y-6">
                       {selectedProject.variations && selectedProject.variations.length > 0 ? (
                         <>
@@ -398,6 +631,7 @@ const ProjectsComponent = () => {
                       )}
                     </div>
 
+                    {/* Contact & Inquiries */}
                     <div className="space-y-6">
                       <div className="space-y-3">
                         <label className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-white/30">Direct Inquiries</label>
@@ -417,6 +651,7 @@ const ProjectsComponent = () => {
                         </div>
                       </div>
 
+                      {/* WhatsApp Button */}
                       <a 
                         href={`https://wa.me/94771234567?text=${encodeURIComponent(`මම ${selectedProject.name}${selectedVariant ? ` හි ${selectedVariant.name}` : ""} ගැන වැඩි විස්තර දැන ගැනීමට කැමතියි.`)}`}
                         target="_blank"
@@ -436,8 +671,13 @@ const ProjectsComponent = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </section>
+
+      {/* Footer Decoration */}
+      <div className="relative h-40 w-full overflow-hidden pointer-events-none">
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-orange-600/20 to-transparent" />
+      </div>
+    </main>
   );
 };
 
-export default ProjectsComponent;
+export default ProjectShowcasePage;

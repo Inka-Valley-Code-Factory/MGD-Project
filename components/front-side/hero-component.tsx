@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./hero.module.css";
 import {
   Settings,
@@ -8,10 +9,37 @@ import {
   Search,
   ShoppingCart,
   Menu,
+  X,
+  ChevronRight,
+  Instagram,
+  Facebook,
+  Linkedin,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const navLinks = [
+  { name: "Our Story", href: "#story" },
+  { name: "Our Services", href: "#services" },
+  { name: "Active Sites", href: "#sites" },
+  { name: "Featured Projects", href: "#projects" },
+  { name: "Client Benefits", href: "#benefits" },
+  { name: "Contact Us", href: "#contact" },
+];
 
 const HeroComponent = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isMenuOpen]);
 
   useEffect(() => {
     const container = carouselRef.current;
@@ -107,6 +135,92 @@ const HeroComponent = () => {
 
   return (
     <section className={styles.heroContainer}>
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100000] flex items-center justify-center p-6 md:hidden"
+          >
+            {/* Backdrop Blur */}
+            <motion.div
+              initial={{ backdropFilter: "blur(0px)", backgroundColor: "rgba(0,0,0,0)" }}
+              animate={{ backdropFilter: "blur(30px)", backgroundColor: "rgba(11,13,16,0.95)" }}
+              exit={{ backdropFilter: "blur(0px)", backgroundColor: "rgba(0,0,0,0)" }}
+              onClick={() => setIsMenuOpen(false)}
+              className="absolute inset-0"
+            />
+
+            {/* Menu Content Container */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 30 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full h-[85vh] bg-white/[0.03] border border-white/10 rounded-[40px] shadow-2xl flex flex-col overflow-hidden"
+            >
+              {/* Menu Header */}
+              <div className="p-8 flex items-center justify-between border-b border-white/5 shrink-0">
+                <div className="flex items-center gap-3">
+                  <img src="/logo.png" alt="MGD GROUP" className="h-8 w-auto" />
+                  <span className="text-white font-black text-sm tracking-tight">MGD GROUP</span>
+                </div>
+                <button
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/40 hover:bg-orange-600 hover:text-white transition-all"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              {/* Navigation Links */}
+              <div className="flex-1 px-8 py-10 overflow-y-auto no-scrollbar">
+                <div className="flex flex-col gap-8">
+                  {navLinks.map((link, i) => (
+                    <motion.a
+                      key={link.name}
+                      href={link.href}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="group flex items-center justify-between"
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-[0.6rem] font-black text-orange-500 uppercase tracking-[0.4em] mb-1">
+                          0{i + 1}
+                        </span>
+                        <span className="text-3xl font-bold text-white uppercase tracking-tighter group-hover:text-orange-500 transition-colors">
+                          {link.name}
+                        </span>
+                      </div>
+                      <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/20 group-hover:border-orange-500 group-hover:text-orange-500 transition-all">
+                        <ChevronRight size={18} />
+                      </div>
+                    </motion.a>
+                  ))}
+                </div>
+              </div>
+
+              {/* Menu Footer */}
+              <div className="p-8 bg-white/[0.02] border-t border-white/5 flex flex-col gap-6">
+                <div className="flex justify-center gap-8">
+                  <a href="#" className="text-white/20 hover:text-white transition-colors"><Instagram size={20} /></a>
+                  <a href="#" className="text-white/20 hover:text-white transition-colors"><Facebook size={20} /></a>
+                  <a href="#" className="text-white/20 hover:text-white transition-colors"><Linkedin size={20} /></a>
+                </div>
+                <div className="text-center space-y-1">
+                  <p className="text-[0.55rem] font-bold text-white/10 uppercase tracking-[0.4em]">Powered by MGD Excellence</p>
+                  <p className="text-[0.5rem] font-bold text-white/5 uppercase tracking-[0.2em]">© 2024 MGD GROUP PVT LTD</p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Background Image */}
       <div className={styles.bgImage}></div>
 
@@ -139,32 +253,23 @@ const HeroComponent = () => {
             </div>
           </div>
 
-          <div className={styles.mobileMenuBtn}>
+          <button onClick={() => setIsMenuOpen(true)} className={styles.mobileMenuBtn}>
             <Menu className="w-6 h-6 text-white cursor-pointer" />
-          </div>
+          </button>
         </div>
 
         {/* TOP NAV */}
         <div className={styles.navArea}>
           <div className="flex gap-8 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
-            <span className="text-white cursor-pointer hover:text-[#ff4500] transition-colors">
-              Our Story
-            </span>
-            <span className="cursor-pointer hover:text-white transition-colors">
-              Our Services
-            </span>
-            <span className="cursor-pointer hover:text-white transition-colors">
-              Active Sites
-            </span>
-            <span className="cursor-pointer hover:text-white transition-colors">
-              Featured Projects
-            </span>
-            <span className="cursor-pointer hover:text-white transition-colors">
-              Client Benefits
-            </span>
-            <span className="cursor-pointer hover:text-white transition-colors">
-              Contact Us
-            </span>
+            {navLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                className="hover:text-white transition-colors cursor-pointer"
+              >
+                {link.name}
+              </a>
+            ))}
           </div>
         </div>
 

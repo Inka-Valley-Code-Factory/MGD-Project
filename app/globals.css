@@ -44,19 +44,28 @@
   * {
     @apply border-border;
   }
+
+  html,
+  body {
+    overflow-x: clip !important;
+    max-width: 100vw !important;
+    position: relative;
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
   }
+}
 
-  @supports (animation-timeline: view()) {
-    .sites-scroll-section {
-      view-timeline-name: --sites-timeline;
-    }
-    .sites-scroll-track {
-      animation: auto linear sites-horizontal-scroll forwards;
-      animation-timeline: --sites-timeline;
-      animation-range: entry 100% exit 0%;
-    }
+@supports (animation-timeline: view()) {
+  .sites-scroll-section {
+    view-timeline-name: --sites-timeline;
+  }
+  .sites-scroll-track {
+    animation: auto linear sites-horizontal-scroll forwards;
+    animation-timeline: --sites-timeline;
+    animation-range: entry 100% exit 0%;
   }
 }
 

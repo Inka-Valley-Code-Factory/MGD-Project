@@ -19,6 +19,9 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
+import PromotionalDrawer from "@/components/front-side/promotional-drawer";
+import WhatsAppSticky from "@/components/front-side/whatsapp-sticky";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,11 +32,13 @@ export default function RootLayout({
       <body className={`${geistSans.className} antialiased`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
         >
           {children}
+          <PromotionalDrawer />
+          <WhatsAppSticky />
         </ThemeProvider>
       </body>
     </html>
