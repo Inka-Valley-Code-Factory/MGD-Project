@@ -32,8 +32,46 @@ const navLinks = [
 const HeroComponent = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const activeIndexRef = useRef(0);
+  const [currentBg, setCurrentBg] = useState(0);
+  const [prevBg, setPrevBg] = useState<number | null>(null);
+  const bgImages = ["/IMG01.JPG", "/IMG02.JPG", "/IMG03.JPG"];
+  const quotes = [
+    {
+      title: "Precision Engineering",
+      text: "CRAFTING SPACES WHERE ARCHITECTURAL BRILLIANCE MEETS RIGOROUS ENGINEERING.",
+    },
+    {
+      title: "Visionary Design",
+      text: "BRILLIANT BY DESIGN. WHERE CREATIVE VISION MEETS TECHNICAL MASTERY.",
+    },
+    {
+      title: "Legacy of Trust",
+      text: "BUILT ON TRUST. UPHOLDING A LEGACY OF RELIABILITY IN EVERY FOUNDATION.",
+    },
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPrevBg(currentBg);
+      setCurrentBg((prev) => (prev + 1) % bgImages.length);
+    }, 8000); // 8 seconds per slide
+
+    return () => clearInterval(interval);
+  }, [currentBg]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      
+      document.documentElement.style.setProperty('--mouse-x', x.toString());
+      document.documentElement.style.setProperty('--mouse-y', y.toString());
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -247,8 +285,19 @@ const HeroComponent = () => {
         )}
       </AnimatePresence>
 
-      {/* Background Image */}
-      <div className={styles.bgImage}></div>
+      {/* Background Cinematic Carousel */}
+      <div className={styles.bgImage}>
+        {bgImages.map((src, index) => (
+          <div
+            key={src}
+            className={`${styles.bgLayer} ${
+              index === currentBg ? styles.bgLayerActive : 
+              index === prevBg ? styles.bgLayerExit : ""
+            }`}
+            style={{ backgroundImage: `url(${src})` }}
+          />
+        ))}
+      </div>
 
       {/* Cinematic overlays */}
       <div className={styles.ambientGlow}></div>
@@ -382,15 +431,43 @@ const HeroComponent = () => {
             </div>
           </div>
 
-          <div className={styles.ctaRow}>
-            <button className={`${styles.btnPrimary} rounded-xl `}>
+          <div className={`${styles.ctaRow} flex items-center gap-6 mt-8`}>
+            <button className={`${styles.btnPrimary} rounded-xl !mt-0`}>
               Explore Us
             </button>
+            
+            {/* Cinematic Progress Indicators */}
+            <div className={styles.progressContainer}>
+              {bgImages.map((_, idx) => (
+                <div 
+                  key={idx}
+                  className={`${styles.progressBar} ${
+                    idx === currentBg ? styles.progressBarActive : ""
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* TOP RIGHT INFO */}
+        {/* TOP RIGHT INFO / QUOTE AREA */}
         <div className={styles.rightTopInfo}>
+          <div className={styles.quoteArea}>
+            {quotes.map((quote, index) => (
+              <div
+                key={index}
+                className={`${styles.quoteWrapper} ${
+                  index === currentBg ? styles.quoteActive : 
+                  index === prevBg ? styles.quoteExit : ""
+                }`}
+              >
+                <span className={styles.quoteTitle}>{quote.title}</span>
+                <p className={styles.quoteText}>{quote.text}</p>
+                <div className={styles.quoteLine}></div>
+              </div>
+            ))}
+          </div>
+
           <div className={styles.pointerLine}>
             <div className={styles.pointerDot}></div>
             <div className={styles.pointerLineH}></div>
